@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Avatar</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="vhs-container">
+        <button id="open-control-panel" class="window-control-button">Control</button>
+        <button id="open-logs-panel" class="window-control-button">Logs</button>
+        <button id="minimize-avatar-window" class="window-control-button">-</button>
+        <button id="close-avatar-window" class="window-control-button">X</button>
+        <div class="scanline"></div>
+        <div class="noise"></div>
+        <div id="rec-indicator">
+            <div class="rec-dot"></div>
+            <span>REC</span>
+        </div>
+
+        <div id="subtitle-box">
+            <span id="subtitle-text"></span>
+        </div>
+        <video id="makima-avatar-video" autoplay loop muted playsinline>
+            <source src="avatar/makima_neutral.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+
+        <div id="terminal-container">
+            <div id="terminal-output"></div>
+            <div class="terminal-input-line">
+                <span class="prompt">></span>
+                <input type="text" id="terminal-input" autofocus>
+                <span class="cursor">_</span>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
