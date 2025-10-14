@@ -35,10 +35,6 @@ body {
 }
 .rec-dot { width: 15px; height: 15px; background-color: red; border-radius: 50%; margin-right: 5px; animation: blink 1s infinite; }
 
-#open-logs-panel:hover {
-    background-color: rgba(0, 0, 0, 0.8);
-}
-
 .window-control-button {
     position: absolute;
     top: 5px;
@@ -55,20 +51,25 @@ body {
 .window-control-button:hover {
     background-color: rgba(0, 0, 0, 0.8);
 }
+
+/* --- Button Positions --- */
+#close-avatar-window {
+    right: 5px;
+}
 #minimize-avatar-window {
     right: 40px;
 }
 #open-control-panel {
-    right: 70px;
-}
-
-#open-logs-panel {
     left: 10px;
 }
+#open-logs-panel {
+    left: 90px;
+}
+
 
 #subtitle-box {
     position: absolute;
-    top: 20px;
+    bottom: 80px; /* Moved from top to bottom */
     left: 50%;
     transform: translateX(-50%);
     background-color: rgba(0, 0, 0, 0.7);
@@ -97,8 +98,61 @@ body {
     object-fit: contain;
 }
 
+/* --- Terminal --- */
+#terminal-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #0f0;
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    z-index: 20;
+}
+
+#terminal-container.visible {
+    display: flex; /* Show terminal */
+}
+
+#terminal-output {
+    flex-grow: 1;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.terminal-input-line {
+    display: flex;
+    padding: 5px 10px;
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.prompt {
+    margin-right: 5px;
+}
+
+#terminal-input {
+    flex-grow: 1;
+    background: transparent;
+    border: none;
+    color: #0f0;
+    font-family: inherit;
+}
+
+#terminal-input:focus {
+    outline: none;
+}
+
+.cursor {
+    background-color: #0f0;
+    width: 8px;
+    animation: blink 1s step-end infinite;
+}
+
+
 /* --- Animations --- */
-@keyframes blink { 50% { opacity: 0.5; } }
+@keyframes blink { 50% { opacity: 0; } }
 @keyframes noise-animation { 0% { transform: translate(0,0); } 20% { transform: translate(-5px, 5px); } 40% { transform: translate(5px, -5px); } 60% { transform: translate(-5px, -5px); } 80% { transform: translate(5px, 5px); } 100% { transform: translate(0,0); } }
 @keyframes vhs-jitter { 0% { transform: scale(1.01); } 100% { transform: scale(1.0); } }
 @keyframes color-aberration { 0% { text-shadow: 2px 0 red, -2px 0 cyan; } 50% { text-shadow: -2px 0 red, 2px 0 cyan; } 100% { text-shadow: 2px 0 red, -2px 0 cyan; } }

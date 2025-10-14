@@ -7,6 +7,7 @@ const minimizeAvatarWindowButton = document.getElementById('minimize-avatar-wind
 const closeAvatarWindowButton = document.getElementById('close-avatar-window');
 const terminalInput = document.getElementById('terminal-input');
 const terminalOutput = document.getElementById('terminal-output');
+const terminalContainer = document.getElementById('terminal-container');
 
 const API_URL = 'http://127.0.0.1:5000/api/state';
 const TERMINAL_INPUT_API = 'http://127.0.0.1:5000/api/terminal_input';
@@ -79,8 +80,7 @@ if (openControlPanelButton) {
 // Event listener for the new Logs panel button
 if (openLogsPanelButton) {
     openLogsPanelButton.addEventListener('click', () => {
-        // Call the Python function exposed via pywebview.api
-        window.pywebview.api.open_settings_window();
+        terminalContainer.classList.toggle('visible');
     });
 }
 
