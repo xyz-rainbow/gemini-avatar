@@ -1,86 +1,72 @@
 {
   "es": {
-    "sample_subtitles": [
-      "Hmm...",
-      "¿Qué debería hacer ahora?",
-      "Tengo un poco de hambre.",
-      "Esto es interesante.",
-      "...",
-      "Zzz...",
-      "¡Ah!",
-      "Me pregunto qué estará pensando.",
-      "Un día productivo.",
-      "¿Y si...?",
-      "Necesito un café."
-    ],
-    "emotional_events": [
-      ["¿Estás ahí?", "curious"],
-      ["¡Deja de ignorarme!", "angry"],
-      ["¡Tengo una idea!", "idea"],
-      ["Eso es... inesperado.", "nervous"],
-      ["¡Me encanta esto!", "excited"]
-    ],
+    "ui": {
+      "settings_title": "Configuración",
+      "tab_ai": "IA (Ollama)",
+      "tab_anim": "Transiciones",
+      "tab_prompt": "Personalidad",
+      "ollama_url_label": "URL de Ollama:",
+      "ollama_model_label": "Modelo Local:",
+      "thought_mode_label": "Modo de Pensamiento:",
+      "thought_modes": {
+        "none": "Desactivado",
+        "short": "Breve (Rápido)",
+        "deep": "Profundo (Analítico)",
+        "creative": "Creativo (Personalidad)"
+      },
+      "transition_style_label": "Estilo de transición:",
+      "transition_styles": {
+        "crossout": "Crossout Limpio",
+        "fade": "Fade Suave",
+        "cut": "Corte Directo"
+      },
+      "transition_duration_label": "Duración (segundos):",
+      "system_prompt_label": "System Prompt:",
+      "save_btn": "Aplicar Cambios",
+      "chat_placeholder": "Habla con Makima...",
+      "thought_header": "PENSAMIENTO INTERNO",
+      "lang_label": "Idioma:"
+    },
+    "sample_subtitles": ["Hmm...", "¿Qué debería hacer ahora?", "Tengo un poco de hambre.", "Esto es interesante.", "..."],
+    "emotional_events": [["¿Estás ahí?", "curious"], ["¡Tengo una idea!", "idea"]],
     "chat_responses": {
-      "hola": [
-        {"expression": "happy", "subtitle": "¡Hola!"},
-        {"expression": "curious", "subtitle": "¿En qué puedo ayudarte hoy?"}
-      ],
-      "como estas": [
-        {"expression": "happy", "subtitle": "¡Estoy genial, gracias por preguntar!"},
-        {"expression": "orgullosa", "subtitle": "Lista para cualquier tarea."}
-      ],
-      "idea": [
-        {"expression": "idea", "subtitle": "¿Tienes una idea?"},
-        {"expression": "excited", "subtitle": "¡Me encantaría escucharla!"}
-      ],
-      "default": [
-        {"expression": "thinking", "subtitle": "No estoy segura de cómo responder a eso."},
-        {"expression": "sad", "subtitle": "Todavía estoy aprendiendo."}
-      ]
+      "hola": [{"expression": "happy", "subtitle": "¡Hola!"}],
+      "default": [{"expression": "thinking", "subtitle": "..."}]
     }
   },
   "en": {
-    "sample_subtitles": [
-      "Hmm...",
-      "What should I do now?",
-      "I'm a bit hungry.",
-      "This is interesting.",
-      "...",
-      "Zzz...",
-      "Ah!",
-      "I wonder what they are thinking.",
-      "A productive day.",
-      "What if...?",
-      "I need a coffee."
-    ],
-    "emotional_events": [
-      ["Are you there?", "curious"],
-      ["Stop ignoring me!", "angry"],
-      ["I have an idea!", "idea"],
-      ["That's... unexpected.", "nervous"],
-      ["I love this!", "excited"]
-    ],
+    "ui": {
+      "settings_title": "Settings",
+      "tab_ai": "AI (Ollama)",
+      "tab_anim": "Transitions",
+      "tab_prompt": "Personality",
+      "ollama_url_label": "Ollama URL:",
+      "ollama_model_label": "Local Model:",
+      "thought_mode_label": "Thought Mode:",
+      "thought_modes": {
+        "none": "Disabled",
+        "short": "Short (Fast)",
+        "deep": "Deep (Analytical)",
+        "creative": "Creative (Persona)"
+      },
+      "transition_style_label": "Transition Style:",
+      "transition_styles": {
+        "crossout": "Clean Crossout",
+        "fade": "Smooth Fade",
+        "cut": "Direct Cut"
+      },
+      "transition_duration_label": "Duration (seconds):",
+      "system_prompt_label": "System Prompt:",
+      "save_btn": "Apply Changes",
+      "chat_placeholder": "Talk to Makima...",
+      "thought_header": "INTERNAL THOUGHT",
+      "lang_label": "Language:"
+    },
+    "sample_subtitles": ["Hmm...", "What should I do now?", "I'm a bit hungry.", "This is interesting.", "..."],
+    "emotional_events": [["Are you there?", "curious"], ["I have an idea!", "idea"]],
     "chat_responses": {
-      "hello": [
-        {"expression": "happy", "subtitle": "Hello there!"},
-        {"expression": "curious", "subtitle": "How can I help you today?"}
-      ],
-      "hi": [
-        {"expression": "happy", "subtitle": "Hi!"},
-        {"expression": "curious", "subtitle": "How can I help you today?"}
-      ],
-      "how are you": [
-        {"expression": "happy", "subtitle": "I'm doing great, thanks for asking!"},
-        {"expression": "orgullosa", "subtitle": "Ready to tackle any task."}
-      ],
-      "idea": [
-        {"expression": "idea", "subtitle": "You have an idea?"},
-        {"expression": "excited", "subtitle": "I'm excited to hear it!"}
-      ],
-      "default": [
-        {"expression": "thinking", "subtitle": "I'm not sure how to respond to that."},
-        {"expression": "sad", "subtitle": "I'm still learning."}
-      ]
+      "hello": [{"expression": "happy", "subtitle": "Hello there!"}],
+      "default": [{"expression": "thinking", "subtitle": "..."}]
     }
   }
 }

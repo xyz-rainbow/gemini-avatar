@@ -13,9 +13,9 @@
 </head>
 <body>
     <div id="main-container">
-        <!-- Ventana de Pensamientos (Cian / Glassmorphism) -->
+        <!-- Ventana de Pensamientos (Cian Superior) -->
         <div id="thought-box" class="hidden">
-            <div class="thought-header">PENSAMIENTO INTERNO</div>
+            <div class="thought-header" data-i18n="thought_header">PENSAMIENTO INTERNO</div>
             <span id="thought-text"></span>
         </div>
 
@@ -35,49 +35,56 @@
         <div id="settings-modal" class="hidden">
             <div class="settings-content">
                 <div class="settings-header">
-                    <h2>Ajustes de Makima</h2>
+                    <h2 data-i18n="settings_title">Ajustes</h2>
                     <button id="close-settings" title="Cerrar">×</button>
                 </div>
                 <div class="settings-tabs">
-                    <button class="tab-btn active" data-tab="ai-tab">IA (Ollama)</button>
-                    <button class="tab-btn" data-tab="anim-tab">Transiciones</button>
-                    <button class="tab-btn" data-tab="prompt-tab">Personalidad</button>
+                    <button class="tab-btn active" data-tab="ai-tab" data-i18n="tab_ai">IA</button>
+                    <button class="tab-btn" data-tab="anim-tab" data-i18n="tab_anim">Transiciones</button>
+                    <button class="tab-btn" data-tab="prompt-tab" data-i18n="tab_prompt">Personalidad</button>
                 </div>
                 
                 <div class="tab-content active" id="ai-tab">
                     <div class="form-group">
-                        <label>URL de Ollama:</label>
-                        <input type="text" id="ollama-url" placeholder="http://localhost:11434/api/generate">
+                        <label data-i18n="lang_label">Idioma:</label>
+                        <select id="app-language">
+                            <option value="es">Español</option>
+                            <option value="en">English</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label>Modelo Local:</label>
-                        <select id="ollama-model-select"><option>Cargando...</option></select>
+                        <label data-i18n="ollama_url_label">URL de Ollama:</label>
+                        <input type="text" id="ollama-url">
                     </div>
                     <div class="form-group">
-                        <label>Modo de Pensamiento:</label>
+                        <label data-i18n="ollama_model_label">Modelo Local:</label>
+                        <select id="ollama-model-select"><option>...</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="thought_mode_label">Modo de Pensamiento:</label>
                         <select id="thought-mode">
-                            <option value="none">Desactivado</option>
-                            <option value="short">Breve (Rápido)</option>
-                            <option value="deep">Profundo (Analítico)</option>
-                            <option value="creative">Creativo (Personalidad)</option>
+                            <option value="none" data-i18n="thought_mode_none">Desactivado</option>
+                            <option value="short" data-i18n="thought_mode_short">Breve</option>
+                            <option value="deep" data-i18n="thought_mode_deep">Profundo</option>
+                            <option value="creative" data-i18n="thought_mode_creative">Creativo</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="tab-content" id="anim-tab">
                     <div class="form-group">
-                        <label>Estilo de transición:</label>
+                        <label data-i18n="transition_style_label">Estilo de transición:</label>
                         <select id="transition-style">
-                            <option value="crossout">Crossout Limpio</option>
-                            <option value="fade">Fade Suave</option>
-                            <option value="cut">Corte Directo</option>
+                            <option value="crossout" data-i18n="style_crossout">Crossout</option>
+                            <option value="fade" data-i18n="style_fade">Fade</option>
+                            <option value="cut" data-i18n="style_cut">Corte</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Duración (segundos):</label>
+                        <label data-i18n="transition_duration_label">Duración (segundos):</label>
                         <div class="stepper">
                             <button id="trans-dec" class="stepper-btn">-0.1</button>
-                            <input type="number" id="transition-duration" step="0.1" min="0" value="0.5" readonly>
+                            <input type="number" id="transition-duration" step="0.1" readonly>
                             <button id="trans-inc" class="stepper-btn">+0.1</button>
                         </div>
                     </div>
@@ -85,13 +92,13 @@
 
                 <div class="tab-content" id="prompt-tab">
                     <div class="form-group">
-                        <label>System Prompt:</label>
+                        <label data-i18n="system_prompt_label">System Prompt:</label>
                         <textarea id="system-prompt" rows="5"></textarea>
                     </div>
                 </div>
 
                 <div class="settings-footer">
-                    <button id="save-settings" class="btn-primary">Aplicar Cambios</button>
+                    <button id="save-settings" class="btn-primary" data-i18n="save_btn">Aplicar Cambios</button>
                 </div>
             </div>
         </div>
@@ -100,7 +107,6 @@
             <span id="subtitle-text"></span>
         </div>
 
-        <!-- Doble contenedor para transiciones crossout -->
         <div id="video-container">
             <video id="video-bg" class="avatar-video" autoplay loop muted playsinline poster="Makima.webp">
                 <source src="avatar/makima_neutral.webm" type="video/webm">
@@ -111,10 +117,9 @@
         </div>
 
         <div id="chat-container">
-            <input type="text" id="chat-input" placeholder="Habla con Makima...">
+            <input type="text" id="chat-input" placeholder="...">
         </div>
 
-        <!-- Capas de Efecto VHS (Ahora al final para estar arriba) -->
         <div class="scanline"></div>
         <div class="noise"></div>
     </div>

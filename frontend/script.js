@@ -15,10 +15,12 @@ const settingsModal = document.getElementById('settings-modal');
 const API_URL = 'http://127.0.0.1:5000/api/state';
 const CHAT_API_URL = 'http://127.0.0.1:5000/api/chat';
 const CONFIG_API_URL = 'http://127.0.0.1:5000/api/config';
+const I18N_API_URL = 'http://127.0.0.1:5000/api/i18n';
 
 let isPlayingSequence = false;
-let appConfig = { transition_style: 'crossout', transition_duration: 0.5 };
+let appConfig = { language: 'es', transition_style: 'crossout', transition_duration: 0.5 };
 let currentVideoElement = videoFG;
+let allTranslations = {};
 
 const expressionVideos = {
     "neutral": "avatar/makima_neutral.webm",
@@ -44,8 +46,34 @@ const expressionVideos = {
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+// --- Sistema de Internacionalización (i18n) ---
+async function fetchI18n() {
+    try {
+        const res = await fetch(I18N_API_URL);
+        allTranslations = await res.json();
+        applyI18n();
+    } catch (e) { console.error("Error i18n:", e); }
+}
+
+function applyI18n() {
+    const lang = appConfig.language || 'es';
+    const dict = allTranslations[lang]?.ui || {};
+    
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) {
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                el.placeholder = dict[key];
+            } else {
+                el.innerText = dict[key];
+            }
+        }
+    });
+    // Update chat placeholder separately
+    if (chatInput && dict.chat_placeholder) chatInput.placeholder = dict.chat_placeholder;
+}
+
 async function updateVisuals(expression, subtitle, thought = "") {
-    // 1. Manejo de Pensamientos (Mostrar si hay texto)
     if (thought && thought !== "") {
         thoughtText.textContent = thought;
         thoughtBox.classList.remove('hidden');
@@ -53,7 +81,6 @@ async function updateVisuals(expression, subtitle, thought = "") {
         thoughtBox.classList.add('hidden');
     }
 
-    // 2. Manejo de Subtítulos
     if (subtitle) {
         subtitleText.textContent = subtitle;
         subtitleBox.classList.add('show');
@@ -61,30 +88,18 @@ async function updateVisuals(expression, subtitle, thought = "") {
         subtitleBox.classList.remove('show');
     }
 
-    // 3. Motor de Video Crossout / Transitions
     const newSrc = expressionVideos[expression] || expressionVideos["neutral"];
     const nextVideoElement = (currentVideoElement === videoFG) ? videoBG : videoFG;
 
     if (!currentVideoElement.src.includes(newSrc)) {
         nextVideoElement.src = newSrc;
         nextVideoElement.load();
-        
-        const style = appConfig.transition_style;
-        const duration = appConfig.transition_duration;
-
-        if (style === 'crossout' || style === 'fade') {
-            nextVideoElement.style.transition = `opacity ${duration}s ease-in-out`;
-            currentVideoElement.style.transition = `opacity ${duration}s ease-in-out`;
-            
-            nextVideoElement.style.opacity = 1;
-            currentVideoElement.style.opacity = 0;
-            
-            await sleep(duration * 1000);
-        } else {
-            nextVideoElement.style.opacity = 1;
-            currentVideoElement.style.opacity = 0;
-        }
-
+        const duration = appConfig.transition_duration || 0.5;
+        nextVideoElement.style.transition = `opacity ${duration}s ease-in-out`;
+        currentVideoElement.style.transition = `opacity ${duration}s ease-in-out`;
+        nextVideoElement.style.opacity = 1;
+        currentVideoElement.style.opacity = 0;
+        await sleep(duration * 1000);
         currentVideoElement.classList.remove('active');
         nextVideoElement.classList.add('active');
         currentVideoElement = nextVideoElement;
@@ -138,12 +153,15 @@ async function loadConfig() {
     try {
         const res = await fetch(CONFIG_API_URL);
         appConfig = await res.json();
-        document.getElementById('ollama-url').value = appConfig.ollama_url || 'http://localhost:11434/api/generate';
+        document.getElementById('app-language').value = appConfig.language || 'es';
+        document.getElementById('ollama-url').value = appConfig.ollama_url || '';
         document.getElementById('transition-style').value = appConfig.transition_style || 'crossout';
         document.getElementById('transition-duration').value = appConfig.transition_duration || 0.5;
         document.getElementById('system-prompt').value = appConfig.system_prompt || '';
         document.getElementById('thought-mode').value = appConfig.thought_mode || 'short';
         
+        applyI18n();
+
         const mRes = await fetch('/api/models');
         const models = await mRes.json();
         const sel = document.getElementById('ollama-model-select');
@@ -164,6 +182,7 @@ document.getElementById('open-settings-panel').addEventListener('click', () => {
 document.getElementById('close-settings').addEventListener('click', () => settingsModal.classList.add('hidden'));
 document.getElementById('save-settings').addEventListener('click', async () => {
     const cfg = {
+        language: document.getElementById('app-language').value,
         ollama_url: document.getElementById('ollama-url').value,
         transition_style: document.getElementById('transition-style').value,
         transition_duration: parseFloat(document.getElementById('transition-duration').value),
@@ -177,6 +196,7 @@ document.getElementById('save-settings').addEventListener('click', async () => {
         body: JSON.stringify(cfg)
     });
     appConfig = {...appConfig, ...cfg};
+    applyI18n();
     settingsModal.classList.add('hidden');
 });
 
@@ -203,5 +223,8 @@ document.querySelectorAll('.tab-btn').forEach(b => {
 document.getElementById('minimize-avatar-window').addEventListener('click', () => window.pywebview.api.minimize_avatar_window());
 document.getElementById('close-avatar-window').addEventListener('click', () => window.pywebview.api.close_avatar_window());
 
-setInterval(pollState, 2000);
-loadConfig();
+// --- Start ---
+fetchI18n().then(() => {
+    loadConfig();
+    setInterval(pollState, 2000);
+});

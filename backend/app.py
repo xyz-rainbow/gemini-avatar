@@ -75,6 +75,10 @@ def get_state(): return jsonify(global_state)
 @app.route('/api/config', methods=['GET'])
 def get_config(): return jsonify(config)
 
+@app.route('/api/i18n')
+def get_i18n_full():
+    return jsonify(translations)
+
 @app.route('/api/config', methods=['POST'])
 def save_config():
     new_cfg = request.get_json()

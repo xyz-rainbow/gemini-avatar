@@ -1,93 +1,69 @@
-# Gemini Avatar | XYZ Rainbow
+# <img src="logo.svg" width="40" height="40" valign="middle"> Gemini Avatar | Makima
 
-![Gemini Avatar](frontend/Makima.webp)
-
-An interactive animated avatar application with personality, featuring multiple expressions, idle animations, and a chat interface. Now with **One UI Glassmorphism** design and full **i18n** support.
+An interactive, AI-powered desktop avatar with **Ollama** integration, **Glassmorphism** UI, and **VHS** retro effects.  
+*Un avatar de escritorio interactivo potenciado por IA con integración de **Ollama**, interfaz **Glassmorphism** y efectos retro **VHS**.*
 
 ---
-#xyz-rainbow #xyz-rainbowtechnology #rainbowtechnology.xyz #rainbow.xyz #rainbow@rainbowtechnology.xyz
+#xyz-rainbow #xyz-rainbowtechnology #rainbowtechnology.xyz #rainbow.xyz
 ---
 
-## 🚀 New Features (v1.1.0)
+## 🌟 Features / Características
 
-- **One UI Glassmorphism**: A modern, translucent interface inspired by Samsung's One UI. Controls are minimal and appear on hover.
-- **Internationalization (i18n)**: Support for multiple languages (Spanish and English included). Easily add more in `backend/i18n.json`.
-- **Global Configuration**: Centralized settings in `backend/config.json` (language, idle times, ports, etc.).
-- **Spanish Comments**: All code documentation and comments are now in Spanish.
-- **XYZ Rainbow Branding**: Official project signatures and ASCII art.
+### 🇬🇧 English
+- **Ollama AI Integration**: Local LLM chat processing with emotion detection.
+- **Glassmorphism UI**: Modern, translucent interface inspired by Samsung's One UI.
+- **Internal Thoughts**: Real-time visualization of the AI's analytical process in cyan.
+- **Clean Crossout Transitions**: Smooth video transitions without flickering.
+- **VHS Retro Effect**: Authentic analog noise and scanlines.
+- **Full i18n Support**: Toggle between English and Spanish instantly.
+- **Custom Persona**: Set the avatar's personality via System Prompt.
 
-## 📁 Project Structure
+### 🇪🇸 Español
+- **Integración con Ollama**: Procesamiento de chat local con detección de emociones.
+- **Interfaz Glassmorphism**: Diseño moderno y translúcido inspirado en One UI.
+- **Pensamientos Internos**: Visualización en tiempo real del razonamiento de la IA.
+- **Transiciones Crossout**: Cambios de vídeo fluidos sin parpadeos.
+- **Efecto Retro VHS**: Ruido analógico y líneas de escaneo auténticas.
+- **Soporte i18n Completo**: Cambia entre Inglés y Español al instante.
+- **Personalidad Personalizada**: Configura el comportamiento mediante System Prompt.
 
-```
-gemini-avatar/
-├── backend/
-│   ├── app.py              # Backend Flask (lógica principal e i18n)
-│   ├── i18n.json           # Diccionario de traducciones
-│   ├── config.json         # Configuración global de la app
-│   └── command.txt         # Archivo de comandos temporales
-├── frontend/
-│   ├── index.html          # Interfaz principal del avatar
-│   ├── style.css           # Estilos One UI Glassmorphism
-│   ├── script.js           # Lógica del frontend
-│   └── avatar/             # Vídeos de las expresiones
-├── run.py                  # Punto de entrada (PyWebView + Flask)
-└── requirements.txt        # Dependencias de Python
-```
+## 🛠 Installation / Instalación
 
-## 🛠 Installation
-
-1. **Clone the repository**
+1. **Clone & Setup / Clonar y Configurar**
    ```bash
    git clone https://github.com/xyz-rainbow/gemini-avatar.git
    cd gemini-avatar
-   ```
-
-2. **Create a virtual environment (Recommended)**
-   ```bash
    python3 -m venv venv
-   source venv/bin/activate  # On Linux/macOS
-   # or
-   venv\Scripts\activate     # On Windows
-   ```
-
-3. **Install dependencies**
-   ```bash
+   source venv/bin/activate
    pip install -r requirements.txt
    ```
 
-## 💻 Usage
+2. **Ollama Setup / Configurar Ollama**
+   Ensure Ollama is running locally at `http://localhost:11434`.
+   *Asegúrate de que Ollama esté corriendo localmente.*
 
-### Start the application
-```bash
-python run.py
-```
+3. **Run / Ejecutar**
+   ```bash
+   python run.py
+   ```
+   *Or use the alias / O usa el alias:* `makima`
 
-### Configuration
-Edit `backend/config.json` to change:
-- `language`: "es" or "en".
-- `inactivity_delay`: Seconds before idle mode starts.
-- `long_idle_interval`: Seconds between major expression changes.
+## 📁 Project Structure / Estructura del Proyecto
 
-### Adding Translations
-Edit `backend/i18n.json` to add new phrases or languages.
+- `backend/`: Flask server, Ollama logic, and i18n config.
+- `frontend/`: HTML/CSS/JS files with Glassmorphism styles.
+- `frontend/avatar/`: WebM video assets for expressions.
+- `config.json`: Persistent application settings.
+- `logo.svg`: Official project branding.
 
-## 📡 API Endpoints
+## ⚙️ Configuration / Configuración
 
-- `GET /api/state`: Returns the current avatar state.
-- `POST /api/chat`: Send a message and get a response sequence.
-  ```json
-  {"message": "hola"}
-  ```
-- `POST /api/update_from_gui`: Update expression and subtitle manually.
-
-## 🎨 Aesthetic
-The new **One UI Glass** theme features:
-- **Translucent backgrounds**: Using `backdrop-filter: blur()`.
-- **Rounded corners**: 24px-28px radius for a soft, modern look.
-- **Auto-hide controls**: Window controls appear only when hovering over the application.
-
-## 📄 License
-This project is open source under XYZ Rainbow Technology guidelines.
+Access the **Settings Panel** (⚙️ icon) to adjust:
+- **Language**: English / Spanish.
+- **Model**: Select from your local Ollama models.
+- **Thought Mode**: None, Short, Deep, or Creative.
+- **Transitions**: Style (Fade/Crossout) and Duration.
+- **Persona**: Define how Makima speaks and thinks.
 
 ---
-**Developed with ❤️ by XYZ Rainbow Technology**
+**Developed with ❤️ by [XYZ Rainbow Technology](https://rainbowtechnology.xyz)**
