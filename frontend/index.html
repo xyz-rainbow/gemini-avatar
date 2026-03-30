@@ -1,35 +1,122 @@
 <!DOCTYPE html>
-<html lang="en">
+<!-- 
+#xyz-rainbow #xyz-rainbowtechnology #rainbowtechnology.xyz #rainbow.xyz #rainbow@rainbowtechnology.xyz
+#i-love-you #You're not supposed to see this!
+-->
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemini Avatar</title>
+    <title>Gemini Avatar | Makima</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="vhs-container">
-        <button id="open-control-panel" class="window-control-button">Control</button>
-        <button id="open-logs-panel" class="window-control-button">Logs</button>
-        <button id="minimize-avatar-window" class="window-control-button">-</button>
-        <button id="close-avatar-window" class="window-control-button">X</button>
-        <div class="scanline"></div>
-        <div class="noise"></div>
+    <div id="main-container">
+        <!-- Ventana de Pensamientos (Cian / Glassmorphism) -->
+        <div id="thought-box" class="hidden">
+            <div class="thought-header">PENSAMIENTO INTERNO</div>
+            <span id="thought-text"></span>
+        </div>
+
+        <!-- Controles de ventana -->
+        <div id="window-controls">
+            <button id="open-settings-panel" title="Configuración">⚙️</button>
+            <button id="minimize-avatar-window" title="Minimizar">_</button>
+            <button id="close-avatar-window" title="Cerrar">×</button>
+        </div>
+
         <div id="rec-indicator">
             <div class="rec-dot"></div>
-            <span>REC</span>
+            <span>LIVE</span>
+        </div>
+
+        <!-- Panel de Configuración -->
+        <div id="settings-modal" class="hidden">
+            <div class="settings-content">
+                <div class="settings-header">
+                    <h2>Ajustes de Makima</h2>
+                    <button id="close-settings" title="Cerrar">×</button>
+                </div>
+                <div class="settings-tabs">
+                    <button class="tab-btn active" data-tab="ai-tab">IA (Ollama)</button>
+                    <button class="tab-btn" data-tab="anim-tab">Transiciones</button>
+                    <button class="tab-btn" data-tab="prompt-tab">Personalidad</button>
+                </div>
+                
+                <div class="tab-content active" id="ai-tab">
+                    <div class="form-group">
+                        <label>URL de Ollama:</label>
+                        <input type="text" id="ollama-url" placeholder="http://localhost:11434/api/generate">
+                    </div>
+                    <div class="form-group">
+                        <label>Modelo Local:</label>
+                        <select id="ollama-model-select"><option>Cargando...</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Modo de Pensamiento:</label>
+                        <select id="thought-mode">
+                            <option value="none">Desactivado</option>
+                            <option value="short">Breve (Rápido)</option>
+                            <option value="deep">Profundo (Analítico)</option>
+                            <option value="creative">Creativo (Personalidad)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="anim-tab">
+                    <div class="form-group">
+                        <label>Estilo de transición:</label>
+                        <select id="transition-style">
+                            <option value="crossout">Crossout Limpio</option>
+                            <option value="fade">Fade Suave</option>
+                            <option value="cut">Corte Directo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Duración (segundos):</label>
+                        <div class="stepper">
+                            <button id="trans-dec" class="stepper-btn">-0.1</button>
+                            <input type="number" id="transition-duration" step="0.1" min="0" value="0.5" readonly>
+                            <button id="trans-inc" class="stepper-btn">+0.1</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="prompt-tab">
+                    <div class="form-group">
+                        <label>System Prompt:</label>
+                        <textarea id="system-prompt" rows="5"></textarea>
+                    </div>
+                </div>
+
+                <div class="settings-footer">
+                    <button id="save-settings" class="btn-primary">Aplicar Cambios</button>
+                </div>
+            </div>
         </div>
 
         <div id="subtitle-box">
             <span id="subtitle-text"></span>
         </div>
-        <video id="makima-avatar-video" autoplay loop muted playsinline>
-            <source src="avatar/makima_neutral.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
+
+        <!-- Doble contenedor para transiciones crossout -->
+        <div id="video-container">
+            <video id="video-bg" class="avatar-video" autoplay loop muted playsinline poster="Makima.webp">
+                <source src="avatar/makima_neutral.webm" type="video/webm">
+            </video>
+            <video id="video-fg" class="avatar-video active" autoplay loop muted playsinline poster="Makima.webp">
+                <source src="avatar/makima_neutral.webm" type="video/webm">
+            </video>
+        </div>
 
         <div id="chat-container">
-            <input type="text" id="chat-input" placeholder="Talk to the avatar...">
+            <input type="text" id="chat-input" placeholder="Habla con Makima...">
         </div>
+
+        <!-- Capas de Efecto VHS (Ahora al final para estar arriba) -->
+        <div class="scanline"></div>
+        <div class="noise"></div>
     </div>
     <script src="script.js"></script>
 </body>

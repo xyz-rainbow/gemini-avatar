@@ -1,235 +1,175 @@
+"""
+#xyz-rainbow #xyz-rainbowtechnology #rainbowtechnology.xyz #rainbow.xyz #rainbow@rainbowtechnology.xyz
+#i-love-you #You're not supposed to see this!
+
+ ____      _    ___ _   _ ____   _____        __ 
+|  _ \    / \  |_ _| \ | | __ ) / _ \ \      / / 
+| |_) |  / _ \  | ||  \| |  _ \| | | \ \ /\ / /  
+|  _ <  / ___ \ | || |\  | |_) | |_| |\ V  V /   
+|_| \_\/_/   \_\___|_| \_|____/ \___/  \_\/\_/    
+
+Backend de la aplicación Gemini Avatar con soporte para pensamientos y Ollama.
+"""
+
 import os
 import time
 import threading
 import random
 import json
+import requests
 from flask import Flask, jsonify, send_from_directory, request
 
-# --- Path Configuration ---
+# --- Configuración de Rutas ---
 backend_dir = os.path.dirname(os.path.abspath(__file__))
 frontend_dir = os.path.join(backend_dir, '..', 'frontend')
-COMMAND_FILE = os.path.join(backend_dir, 'command.txt')
+CONFIG_FILE = os.path.join(backend_dir, 'config.json')
+I18N_FILE = os.path.join(backend_dir, 'i18n.json')
 
-# --- App Configuration ---
+# --- Carga de Configuración ---
+config = {}
+def load_config():
+    global config
+    try:
+        if os.path.exists(CONFIG_FILE):
+            with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+        else:
+            config = {
+                "ollama_enabled": True,
+                "ollama_url": "http://localhost:11434/api/generate",
+                "ollama_model": "llama3",
+                "thought_mode": "short",
+                "system_prompt": "Eres Makima. Responde en JSON con keys 'thought', 'expression' y 'subtitle'."
+            }
+    except Exception as e:
+        print(f"[ERROR CONFIG] {e}")
+
+load_config()
+
+# --- Configuración de la Aplicación ---
 app = Flask(__name__, static_folder=frontend_dir, static_url_path='')
 
-# --- State Management ---
+# --- Gestión del Estado ---
 global_state = {
     "expression": "neutral",
-    "subtitle": ""
+    "subtitle": "",
+    "thought": ""
 }
 last_manual_command_time = time.time()
 
-# --- Avatar Personality Configuration ---
-
-# All available expression video files
 allowed_expressions = [
     "neutral", "orgullosa", "angry", "annoyed", "idle1", "idle2", "idle3", "idle4",
     "nervous", "sad", "sleepy", "happy", "thinking", "talking", "wink", "idea",
     "idea2", "curious", "excited"
 ]
-
-# Specific idle states to cycle through
 idle_cycle_expressions = ["idle1", "idle2", "idle3", "idle4"]
 
-# Generic subtitles for random thoughts
-sample_subtitles = [
-    "Hmm...", "¿Qué debería hacer ahora?", "Tengo un poco de hambre.",
-    "Esto es interesante.", "...", "Zzz...", "¡Ah!",
-    "Me pregunto qué estará pensando.", "Un día productivo.", "¿Y si...?",
-    "Necesito un café."
-]
+# --- API Endpoints ---
 
-# Subtitles that trigger a specific expression
-emotional_events = [
-    ("¿Estás ahí?", "curious"),
-    ("¡Deja de ignorarme!", "angry"),
-    ("¡Tengo una idea!", "idea"),
-    ("Eso es... inesperado.", "nervous"),
-    ("¡Me encanta esto!", "excited")
-]
-
-# --- Idle Mode Logic ---
-def manage_idle_state():
-    global last_manual_command_time
-    
-    inactivity_delay = 7  # Start idle mode after 7 seconds
-    long_idle_interval = 40 # Major change every 40 seconds
-
-    last_short_idle_change = time.time()
-    last_long_idle_change = time.time()
-    last_subtitle_change = time.time()
-
-    next_short_idle_interval = random.randint(4, 10)
-    next_subtitle_interval = random.randint(5, 18)
-
-    while True:
-        time.sleep(1)
-
-        if time.time() - last_manual_command_time < inactivity_delay:
-            continue
-
-        # --- Subtitle & Emotional Event Logic ---
-        if time.time() - last_subtitle_change > next_subtitle_interval:
-            # 25% chance of an emotional event, 75% for a normal subtitle
-            if random.random() < 0.25 and emotional_events:
-                subtitle, expression = random.choice(emotional_events)
-                global_state['subtitle'] = subtitle
-                global_state['expression'] = expression
-                print(f"[IDLE-EVENT] Triggered event: {subtitle} -> {expression}")
-                # This is a major event, so reset the other timers
-                last_long_idle_change = time.time()
-                last_short_idle_change = time.time()
-            else:
-                # 50% chance of a generic subtitle, 50% chance of clearing it
-                if random.random() < 0.5 and sample_subtitles:
-                    global_state['subtitle'] = random.choice(sample_subtitles)
-                else:
-                    global_state['subtitle'] = ""
-            
-            last_subtitle_change = time.time()
-            next_subtitle_interval = random.randint(5, 18)
-
-        # --- Expression Change Logic ---
-        if time.time() - last_long_idle_change > long_idle_interval:
-            new_expression = random.choice(allowed_expressions)
-            global_state['expression'] = new_expression
-            print(f"[IDLE-LONG] New expression: {new_expression}")
-            last_long_idle_change = time.time()
-            last_short_idle_change = time.time()
-
-        elif time.time() - last_short_idle_change > next_short_idle_interval:
-            current_expression = global_state['expression']
-            # Filter out the current expression to avoid repeats
-            available_idles = [e for e in idle_cycle_expressions if e != current_expression]
-            if available_idles:
-                new_expression = random.choice(available_idles)
-                global_state['expression'] = new_expression
-                global_state['subtitle'] = "" # Clear subtitle on minor idle change
-                print(f"[IDLE-SHORT] New expression: {new_expression}")
-            
-            last_short_idle_change = time.time()
-            next_short_idle_interval = random.randint(4, 10)
-
-# --- Command Processing Logic ---
-def watch_command_file():
-    global last_manual_command_time
-    print("--- Command file watcher started ---")
-    while True:
-        try:
-            if os.path.exists(COMMAND_FILE):
-                with open(COMMAND_FILE, 'r') as f:
-                    command_data = f.read().strip()
-                os.remove(COMMAND_FILE)
-
-                command, subtitle = None, ""
-                try:
-                    cmd_obj = json.loads(command_data)
-                    command = cmd_obj.get('expression')
-                    subtitle = cmd_obj.get('subtitle', "")
-                except json.JSONDecodeError:
-                    command = command_data
-
-                if command in allowed_expressions:
-                    global_state['expression'] = command
-                    global_state['subtitle'] = subtitle
-                    last_manual_command_time = time.time()
-                    print(f"[MANUAL] State updated: {global_state}")
-                else:
-                    print(f"Warning: Received invalid command '{command}' from file.")
-            
-        except Exception as e:
-            print(f"Error in command watcher: {e}")
-        time.sleep(0.5)
-
-# --- API & Frontend Routes ---
 @app.route('/')
-def index():
-    return send_from_directory(app.static_folder, 'index.html')
+def index(): return send_from_directory(app.static_folder, 'index.html')
 
-@app.route('/api/state', methods=['GET'])
-def get_state():
-    return jsonify(global_state)
+@app.route('/api/state')
+def get_state(): return jsonify(global_state)
 
-@app.route('/control')
-def control_panel():
-    return send_from_directory(app.static_folder, 'control.html')
+@app.route('/api/config', methods=['GET'])
+def get_config(): return jsonify(config)
 
-@app.route('/settings')
-def settings_panel():
-    return send_from_directory(app.static_folder, 'settings.html')
-
-@app.route('/api/logs')
-def get_logs():
-    captured_output = app.config.get('CAPTURED_OUTPUT')
-    if captured_output:
-        return jsonify(logs=captured_output.get_output())
-    return jsonify(logs="Log capture not initialized."), 500
-
-@app.route('/api/terminal_input', methods=['POST'])
-def terminal_input_handler():
-    data = request.get_json()
-    text_input = data.get('text', '').strip()
-    if not text_input: return jsonify({"success": False, "error": "No text provided"}), 400
-
-    expression_to_set, subtitle_to_set = global_state['expression'], ""
-    if text_input in allowed_expressions:
-        expression_to_set = text_input
-    else:
-        subtitle_to_set = text_input
-
+@app.route('/api/config', methods=['POST'])
+def save_config():
+    new_cfg = request.get_json()
+    config.update(new_cfg)
     try:
-        with open(COMMAND_FILE, 'w') as f:
-            json.dump({'expression': expression_to_set, 'subtitle': subtitle_to_set}, f)
-        return jsonify({"success": True, "message": f"Command '{text_input}' processed."})
+        with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+            json.dump(config, f, indent=2)
+        load_config()
+        return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/models', methods=['GET'])
+def get_models():
+    try:
+        # Extraer base URL de Ollama para listar tags
+        url = config.get('ollama_url', 'http://localhost:11434/api/generate')
+        base_url = url.split('/api/')[0]
+        resp = requests.get(f"{base_url}/api/tags", timeout=3)
+        if resp.status_code == 200:
+            return jsonify([m['name'] for m in resp.json().get('models', [])])
+    except: pass
+    return jsonify(["llama3", "qwen3.5:0.8b"])
 
 @app.route('/api/chat', methods=['POST'])
 def chat_handler():
     data = request.get_json()
     message = data.get('message', '').lower()
-
-    # Simple rule-based responses
-    if 'hello' in message or 'hi' in message:
-        response_sequence = [
-            {"expression": "happy", "subtitle": "Hello there!"},
-            {"expression": "curious", "subtitle": "How can I help you today?"}
-        ]
-    elif 'how are you' in message:
-        response_sequence = [
-            {"expression": "happy", "subtitle": "I'm doing great, thanks for asking!"},
-            {"expression": "orgullosa", "subtitle": "Ready to tackle any task."}
-        ]
-    elif 'idea' in message:
-        response_sequence = [
-            {"expression": "idea", "subtitle": "You have an idea?"},
-            {"expression": "excited", "subtitle": "I'm excited to hear it!"}
-        ]
-    else:
-        response_sequence = [
-            {"expression": "thinking", "subtitle": "I'm not sure how to respond to that."},
-            {"expression": "sad", "subtitle": "I'm still learning."}
-        ]
-
-    return jsonify(response_sequence)
-
-@app.route('/api/update_from_gui', methods=['POST'])
-def update_from_gui():
-    data = request.get_json()
-    expression, subtitle = data.get('expression'), data.get('subtitle', "")
-    if expression and expression in allowed_expressions:
+    
+    if config.get("ollama_enabled", True):
         try:
-            with open(COMMAND_FILE, 'w') as f:
-                json.dump({'expression': expression, 'subtitle': subtitle}, f)
-            return jsonify({"success": True, "message": f"Command '{expression}' sent."})
+            url = config.get("ollama_url", "http://localhost:11434/api/generate")
+            model = config.get("ollama_model", "llama3")
+            
+            # Construcción del Prompt con instrucciones de formato
+            prompt = f"{config.get('system_prompt', '')}\n\nUsuario: {message}\nAsistente (JSON):"
+            
+            payload = {
+                "model": model,
+                "prompt": prompt,
+                "stream": False,
+                "format": "json",
+                "keep_alive": config.get("ollama_keep_alive", "5m")
+            }
+            
+            print(f"[OLLAMA] Petición a {url} con modelo {model}...")
+            resp = requests.post(url, json=payload, timeout=60)
+            
+            if resp.status_code == 200:
+                data = resp.json()
+                raw_response = data.get("response", "").strip()
+                
+                # Si 'response' está vacío, intentar obtenerlo de 'thinking' (Ollama v0.5+)
+                if not raw_response:
+                    raw_response = data.get("thinking", "").strip()
+                
+                print(f"[OLLAMA RESPONSE] {raw_response}")
+                
+                try:
+                    parsed = json.loads(raw_response)
+                    exp = parsed.get("expression", "neutral")
+                    if exp not in allowed_expressions: exp = "neutral"
+                    
+                    res_obj = {
+                        "expression": exp,
+                        "subtitle": parsed.get("subtitle", "..."),
+                        "thought": parsed.get("thought", "") if config.get("thought_mode") != "none" else ""
+                    }
+                    return jsonify([res_obj])
+                except Exception as e:
+                    # Si no es JSON válido, devolver como texto plano con expresión neutral
+                    print(f"[PARSE ERROR] {e} - Devolviendo como texto plano.")
+                    return jsonify([{"expression": "talking", "subtitle": raw_response, "thought": ""}])
+            else:
+                print(f"[OLLAMA ERROR] HTTP {resp.status_code}: {resp.text}")
         except Exception as e:
-            return jsonify({"success": False, "error": str(e)}), 500
-    return jsonify({"success": False, "error": "Invalid expression"}), 400
+            error_msg = f"Error: {type(e).__name__} - {str(e)}"
+            print(f"[OLLAMA EXCEPTION] {error_msg}")
+            return jsonify([{"expression": "sad", "subtitle": "Fallo de conexión.", "thought": error_msg}])
 
-# --- Main Execution ---
-command_watcher_thread = threading.Thread(target=watch_command_file, daemon=True)
-command_watcher_thread.start()
+    return jsonify([{"expression": "sad", "subtitle": "Ollama desactivado.", "thought": "Actívalo en config.json"}])
 
-idle_manager_thread = threading.Thread(target=manage_idle_state, daemon=True)
-idle_manager_thread.start()
+# --- Lógica Idle ---
+def manage_idle_state():
+    global last_manual_command_time
+    while True:
+        time.sleep(1)
+        if time.time() - last_manual_command_time < config.get("inactivity_delay", 7):
+            continue
+        if random.random() < 0.05:
+            global_state['expression'] = random.choice(idle_cycle_expressions)
+            global_state['subtitle'] = ""
+            global_state['thought'] = ""
+
+threading.Thread(target=manage_idle_state, daemon=True).start()
+
+if __name__ == "__main__":
+    app.run(port=5000)

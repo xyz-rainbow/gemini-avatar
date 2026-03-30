@@ -1,144 +1,207 @@
-const videoElement = document.getElementById('makima-avatar-video');
+/**
+ * #xyz-rainbow #xyz-rainbowtechnology #rainbowtechnology.xyz #rainbow.xyz #rainbow@rainbowtechnology.xyz
+ * #i-love-you #You're not supposed to see this!
+ */
+
+const videoBG = document.getElementById('video-bg');
+const videoFG = document.getElementById('video-fg');
+const thoughtBox = document.getElementById('thought-box');
+const thoughtText = document.getElementById('thought-text');
 const subtitleBox = document.getElementById('subtitle-box');
 const subtitleText = document.getElementById('subtitle-text');
-const openControlPanelButton = document.getElementById('open-control-panel');
-const openLogsPanelButton = document.getElementById('open-logs-panel');
-const minimizeAvatarWindowButton = document.getElementById('minimize-avatar-window');
-const closeAvatarWindowButton = document.getElementById('close-avatar-window');
 const chatInput = document.getElementById('chat-input');
+const settingsModal = document.getElementById('settings-modal');
 
 const API_URL = 'http://127.0.0.1:5000/api/state';
 const CHAT_API_URL = 'http://127.0.0.1:5000/api/chat';
+const CONFIG_API_URL = 'http://127.0.0.1:5000/api/config';
 
 let isPlayingSequence = false;
+let appConfig = { transition_style: 'crossout', transition_duration: 0.5 };
+let currentVideoElement = videoFG;
 
-// Map expressions to video filenames
 const expressionVideos = {
-    "neutral": "avatar/makima_neutral.mp4",
-    "orgullosa": "avatar/makima_orgullosa.mp4",
-    "angry": "avatar/makima_angry.mp4",
-    "annoyed": "avatar/makima_annoyed.mp4",
-    "idle1": "avatar/makima_idle1.mp4",
-    "idle2": "avatar/makima_idle2.mp4",
-    "idle3": "avatar/makima_idle3.mp4",
-    "idle4": "avatar/makima_idle4.mp4",
-    "nervous": "avatar/makima_nervous.mp4",
-    "sad": "avatar/makima_sad.mp4",
-    "sleepy": "avatar/makima_sleepy.mp4",
-    "happy": "avatar/makima_happy.mp4", 
-    "thinking": "avatar/makima_thinking.mp4", 
-    "talking": "avatar/makima_talking.mp4", 
-    "wink": "avatar/makima_wink.mp4", 
-    "idea": "avatar/makima_idea.mp4", 
-    "idea2": "avatar/makima_idea2.mp4",
-    "curious": "avatar/makima_curious.mp4", 
-    "excited": "avatar/makima_excited.mp4",
+    "neutral": "avatar/makima_neutral.webm",
+    "orgullosa": "avatar/makima_orgullosa.webm",
+    "angry": "avatar/makima_angry.webm",
+    "annoyed": "avatar/makima_annoyed.webm",
+    "idle1": "avatar/makima_idle1.webm",
+    "idle2": "avatar/makima_idle2.webm",
+    "idle3": "avatar/makima_idle3.webm",
+    "idle4": "avatar/makima_idle4.webm",
+    "nervous": "avatar/makima_nervous.webm",
+    "sad": "avatar/makima_sad.webm",
+    "sleepy": "avatar/makima_sleepy.webm",
+    "happy": "avatar/makima_happy.webm", 
+    "thinking": "avatar/makima_thinking.webm", 
+    "talking": "avatar/makima_talking.webm", 
+    "wink": "avatar/makima_wink.webm", 
+    "idea": "avatar/makima_idea.webm", 
+    "idea2": "avatar/makima_idea2.webm",
+    "curious": "avatar/makima_curious.webm", 
+    "excited": "avatar/makima_excited.webm",
 };
 
-// Function to sleep for a given time
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Function to update the avatar's visual state (video and subtitle)
-function updateVisuals(expression, subtitle) {
-    // Update subtitle
+async function updateVisuals(expression, subtitle, thought = "") {
+    // 1. Manejo de Pensamientos (Mostrar si hay texto)
+    if (thought && thought !== "") {
+        thoughtText.textContent = thought;
+        thoughtBox.classList.remove('hidden');
+    } else {
+        thoughtBox.classList.add('hidden');
+    }
+
+    // 2. Manejo de Subtítulos
     if (subtitle) {
         subtitleText.textContent = subtitle;
         subtitleBox.classList.add('show');
     } else {
-        subtitleText.textContent = '';
         subtitleBox.classList.remove('show');
     }
 
-    // Update video source
-    const newVideoFilename = expressionVideos[expression] || expressionVideos["neutral"];
-    const newVideoFullUrl = videoElement.baseURI + newVideoFilename;
+    // 3. Motor de Video Crossout / Transitions
+    const newSrc = expressionVideos[expression] || expressionVideos["neutral"];
+    const nextVideoElement = (currentVideoElement === videoFG) ? videoBG : videoFG;
 
-    if (videoElement.currentSrc !== newVideoFullUrl) {
-        videoElement.src = newVideoFilename;
-        videoElement.load();
-        videoElement.play();
-        videoElement.loop = true;
+    if (!currentVideoElement.src.includes(newSrc)) {
+        nextVideoElement.src = newSrc;
+        nextVideoElement.load();
+        
+        const style = appConfig.transition_style;
+        const duration = appConfig.transition_duration;
+
+        if (style === 'crossout' || style === 'fade') {
+            nextVideoElement.style.transition = `opacity ${duration}s ease-in-out`;
+            currentVideoElement.style.transition = `opacity ${duration}s ease-in-out`;
+            
+            nextVideoElement.style.opacity = 1;
+            currentVideoElement.style.opacity = 0;
+            
+            await sleep(duration * 1000);
+        } else {
+            nextVideoElement.style.opacity = 1;
+            currentVideoElement.style.opacity = 0;
+        }
+
+        currentVideoElement.classList.remove('active');
+        nextVideoElement.classList.add('active');
+        currentVideoElement = nextVideoElement;
     }
 }
 
-// Function to play a sequence of expressions and subtitles
 async function playSequence(sequence) {
     isPlayingSequence = true;
     for (const item of sequence) {
-        updateVisuals(item.expression, item.subtitle);
-        const displayTime = Math.max(2000, item.subtitle.length * 80);
+        await updateVisuals(item.expression, item.subtitle, item.thought);
+        const displayTime = Math.max(3000, item.subtitle.length * 60 + (item.thought ? 2000 : 0));
         await sleep(displayTime);
     }
     isPlayingSequence = false;
-    // Revert to neutral state after sequence
-    updateVisuals('neutral', '');
+    await updateVisuals('neutral', '', '');
 }
 
-// Main state polling function
 async function pollState() {
-    if (isPlayingSequence) return; // Don't poll if a sequence is playing
-
+    if (isPlayingSequence || !settingsModal.classList.contains('hidden')) return;
     try {
         const response = await fetch(API_URL);
-        if (!response.ok) throw new Error('Network response was not ok');
         const state = await response.json();
-        updateVisuals(state.expression, state.subtitle);
-    } catch (error) {
-        console.error('Failed to fetch avatar state:', error);
-    }
+        updateVisuals(state.expression, state.subtitle, state.thought);
+    } catch (e) {}
 }
 
-// Event listener for chat input
+// --- Chat ---
 if (chatInput) {
     chatInput.addEventListener('keypress', async (e) => {
-        if (e.key === 'Enter' && chatInput.value.trim() !== '' && !isPlayingSequence) {
+        if (e.key === 'Enter' && chatInput.value.trim() !== '') {
             const message = chatInput.value.trim();
             chatInput.value = '';
             chatInput.disabled = true;
-
             try {
                 const response = await fetch(CHAT_API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message }),
                 });
-
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                
                 const sequence = await response.json();
                 await playSequence(sequence);
-
-            } catch (error) {
-                console.error('Error during chat:', error);
-                await playSequence([{
-                    expression: 'sad',
-                    subtitle: 'Sorry, I had a little trouble responding.'
-                }]);
-            } finally {
-                chatInput.disabled = false;
-                chatInput.focus();
-            }
+            } catch (e) {}
+            chatInput.disabled = false;
+            chatInput.focus();
         }
     });
 }
 
-// --- Window & Control Listeners ---
-if (openControlPanelButton) {
-    openControlPanelButton.addEventListener('click', () => window.pywebview.api.open_control_window());
-}
-if (openLogsPanelButton) {
-    openLogsPanelButton.addEventListener('click', () => {
-        // This button is now repurposed. You might want to open the settings/logs window.
-        // For now, it does nothing.
-    });
-}
-if (minimizeAvatarWindowButton) {
-    minimizeAvatarWindowButton.addEventListener('click', () => window.pywebview.api.minimize_avatar_window());
-}
-if (closeAvatarWindowButton) {
-    closeAvatarWindowButton.addEventListener('click', () => window.pywebview.api.close_avatar_window());
+// --- Configuración ---
+async function loadConfig() {
+    try {
+        const res = await fetch(CONFIG_API_URL);
+        appConfig = await res.json();
+        document.getElementById('ollama-url').value = appConfig.ollama_url || 'http://localhost:11434/api/generate';
+        document.getElementById('transition-style').value = appConfig.transition_style || 'crossout';
+        document.getElementById('transition-duration').value = appConfig.transition_duration || 0.5;
+        document.getElementById('system-prompt').value = appConfig.system_prompt || '';
+        document.getElementById('thought-mode').value = appConfig.thought_mode || 'short';
+        
+        const mRes = await fetch('/api/models');
+        const models = await mRes.json();
+        const sel = document.getElementById('ollama-model-select');
+        sel.innerHTML = '';
+        models.forEach(m => {
+            let opt = document.createElement('option');
+            opt.value = opt.textContent = m;
+            if (m === appConfig.ollama_model) opt.selected = true;
+            sel.appendChild(opt);
+        });
+    } catch (e) {}
 }
 
-// --- Initialization ---
-setInterval( pollState, 2000); // Poll for state changes every 2 seconds
-pollState(); // Initial state update
+document.getElementById('open-settings-panel').addEventListener('click', () => {
+    loadConfig();
+    settingsModal.classList.remove('hidden');
+});
+document.getElementById('close-settings').addEventListener('click', () => settingsModal.classList.add('hidden'));
+document.getElementById('save-settings').addEventListener('click', async () => {
+    const cfg = {
+        ollama_url: document.getElementById('ollama-url').value,
+        transition_style: document.getElementById('transition-style').value,
+        transition_duration: parseFloat(document.getElementById('transition-duration').value),
+        system_prompt: document.getElementById('system-prompt').value,
+        thought_mode: document.getElementById('thought-mode').value,
+        ollama_model: document.getElementById('ollama-model-select').value
+    };
+    await fetch(CONFIG_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cfg)
+    });
+    appConfig = {...appConfig, ...cfg};
+    settingsModal.classList.add('hidden');
+});
+
+// Stepper
+document.getElementById('trans-dec').addEventListener('click', () => {
+    const i = document.getElementById('transition-duration');
+    i.value = Math.max(0, (parseFloat(i.value) - 0.1).toFixed(1));
+});
+document.getElementById('trans-inc').addEventListener('click', () => {
+    const i = document.getElementById('transition-duration');
+    i.value = (parseFloat(i.value) + 0.1).toFixed(1);
+});
+
+// Tabs
+document.querySelectorAll('.tab-btn').forEach(b => {
+    b.addEventListener('click', (e) => {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        e.target.classList.add('active');
+        document.getElementById(e.target.dataset.tab).classList.add('active');
+    });
+});
+
+document.getElementById('minimize-avatar-window').addEventListener('click', () => window.pywebview.api.minimize_avatar_window());
+document.getElementById('close-avatar-window').addEventListener('click', () => window.pywebview.api.close_avatar_window());
+
+setInterval(pollState, 2000);
+loadConfig();

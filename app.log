@@ -1,0 +1,22 @@
+/home/cloud-xyz/Documentos/proyectos/github/gemini-avatar/run.py:6: SyntaxWarning: invalid escape sequence '\ '
+  \ \/ /\ \ / /__  /
+/home/cloud-xyz/Documentos/proyectos/github/gemini-avatar/backend/app.py:6: SyntaxWarning: invalid escape sequence '\ '
+  |  _ \    / \  |_ _| \ | | __ ) / _ \ \      / /
+[pywebview] GTK cannot be loaded
+Traceback (most recent call last):
+  File "/home/cloud-xyz/Documentos/proyectos/github/gemini-avatar/venv/lib/python3.13/site-packages/webview/guilib.py", line 39, in import_gtk
+    import webview.platforms.gtk as guilib
+  File "/home/cloud-xyz/Documentos/proyectos/github/gemini-avatar/venv/lib/python3.13/site-packages/webview/platforms/gtk.py", line 28, in <module>
+    import gi
+ModuleNotFoundError: No module named 'gi'
+[pywebview] Using Qt 6.10.0
+Added {--remote-allow-origins=*} to command-line arguments to avoid web socket connection errors during remote debugging.
+GBM is not supported with the current configuration. Fallback to Vulkan rendering in Chromium.
+
+DevTools listening on ws://127.0.0.1:8228/devtools/browser/fabb12a4-0ea3-4ee0-9ccc-883af0e67d8d
+Remote debugging server started successfully. Try pointing a Chromium-based browser to http://127.0.0.1:8228
+[830444:830476:0330/021144.151221:ERROR:nss_util.cc(345)] After loading Root Certs, loaded==false: NSS error code: -8018
+[pywebview] before_load event fired. injecting pywebview object
+[pywebview] Loading JS files from /home/cloud-xyz/Documentos/proyectos/github/gemini-avatar/venv/lib/python3.13/site-packages/webview/js
+[pywebview] _pywebviewready event fired
+[pywebview] loaded event fired
