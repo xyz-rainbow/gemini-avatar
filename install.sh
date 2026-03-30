@@ -1,17 +1,16 @@
 #!/bin/bash
 # XYZ Rainbow Technology - Makima Avatar Installer
-echo "🌹 Installing Gemini Avatar (Makima)..."
+echo "🌹 Gemini Avatar (Makima) Setup"
 
-if ! command -v python3 &> /dev/null
-then
-    echo "❌ Error: Python 3 is not installed."
-    exit
+read -p "Do you want to use the Interactive Installer? (y/n): " choice
+
+if [[ "$choice" == "y" || "$choice" == "Y" ]]; then
+    python3 interactive_install.py
+else
+    echo "--- Standard Installation ---"
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    echo "✅ Standard installation complete!"
 fi
-
-python3 -m venv venv
-source venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-
-echo "✅ Installation complete!"
-echo "🚀 To start, run: ./venv/bin/python run.py or use the alias if configured."
