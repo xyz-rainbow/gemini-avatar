@@ -1,0 +1,65 @@
+<svg width="800" height="180" viewBox="0 0 800 180" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="footerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0" />
+      <stop offset="100%" style="stop-color:#00d9ff;stop-opacity:0.08" />
+    </linearGradient>
+    
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00d9ff" />
+      <stop offset="50%" style="stop-color:#ff00ff" />
+      <stop offset="100%" style="stop-color:#00d9ff" />
+    </linearGradient>
+    
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <rect width="800" height="180" fill="url(#footerGrad)"/>
+  
+  <g opacity="0.2">
+    <line x1="0" y1="40" x2="800" y2="40" stroke="#00d9ff" stroke-width="0.5"/>
+    <line x1="0" y1="70" x2="800" y2="70" stroke="#ff00ff" stroke-width="0.5"/>
+    <line x1="0" y1="100" x2="800" y2="100" stroke="#00d9ff" stroke-width="0.5"/>
+    <line x1="0" y1="130" x2="800" y2="130" stroke="#ff00ff" stroke-width="0.5"/>
+    <line x1="0" y1="160" x2="800" y2="160" stroke="#00d9ff" stroke-width="0.5"/>
+  </g>
+  
+  <text x="400" y="85" text-anchor="middle" fill="url(#textGrad)" font-family="monospace" font-size="28" font-weight="bold" letter-spacing="6" filter="url(#glow)">
+    AI AVATAR X
+  </text>
+  
+  <text x="400" y="115" text-anchor="middle" fill="#ff00ff" font-family="monospace" font-size="12" opacity="0.8">
+    ◄ LOCAL INTELLIGENCE // DESKTOP PRESENCE ►
+  </text>
+  
+  <text x="400" y="140" text-anchor="middle" fill="#666" font-family="monospace" font-size="10">
+    BY XYZ RAINBOW TECHNOLOGY
+  </text>
+  
+  <path d="M 60 150 L 60 170 L 80 170" stroke="#00d9ff" stroke-width="2" fill="none" opacity="0.6" filter="url(#glow)"/>
+  <path d="M 740 150 L 740 170 L 720 170" stroke="#00d9ff" stroke-width="2" fill="none" opacity="0.6" filter="url(#glow)"/>
+  <path d="M 60 50 L 60 30 L 80 30" stroke="#00d9ff" stroke-width="2" fill="none" opacity="0.6" filter="url(#glow)"/>
+  <path d="M 740 50 L 740 30 L 720 30" stroke="#00d9ff" stroke-width="2" fill="none" opacity="0.6" filter="url(#glow)"/>
+  
+  <circle cx="60" cy="60" r="2" fill="#00d9ff" opacity="0.8">
+    <animate attributeName="opacity" values="0.8;0.3;0.8" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="740" cy="60" r="2" fill="#ff00ff" opacity="0.8">
+    <animate attributeName="opacity" values="0.8;0.3;0.8" dur="3s" begin="1.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="60" cy="140" r="2" fill="#ff00ff" opacity="0.8">
+    <animate attributeName="opacity" values="0.8;0.3;0.8" dur="3s" begin="0.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="740" cy="140" r="2" fill="#00d9ff" opacity="0.8">
+    <animate attributeName="opacity" values="0.8;0.3;0.8" dur="3s" begin="2s" repeatCount="indefinite"/>
+  </circle>
+</svg>
